@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"> <!-- Link para o Bootstrap CSS -->
+    <script></script>
+</head>
+<body>
+    <div class="container mt-4">
+
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6 card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title">Bem-vindo <%= nomeUsuario %></h2> <!-- Exibe o nome do usuário -->
+                </div>
+                <div class="card-body">
+                    <div>
+                        <p>Aqui você pode cadastrar novos documentos:</p>
+                        <form action="/cadastrar_documento" method="POST">
+                            <input type="hidden" id="userId" name="userId" value="<%= userId %>">
+                            <div class="form-group">
+                                <label for="descricao">Descrição do Documento:</label>
+                                <input type="text" class="form-control" id="descricao" name="descricao" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dataValidade">Data de Validade:</label>
+                                <input type="date" class="form-control" id="dataValidade" name="dataValidade" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Cadastrar</button>
+                        </form>
+                    </div>
+                
+                    <div class="card mt-5">
+                        <div class="card-header bg-success text-white">
+                            <h2 class="card-title">Lista de Documentos</h2>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <% if (documentos.length > 0) { %>
+                                    <% documentos.forEach(doc => { %>
+                                        <li class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>Descrição:</strong> <%= doc.descricaoDoc %> <br>
+                                                    <strong>Data de Vencimento:</strong> <%= doc.data_vencimento %>
+                                                </div>
+                                                <div>
+                                                    <!-- Botão de editar -->
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="editarDocumento('<%= doc.id_doc %>')">
+                                                        <i class="fas fa-pencil-alt"></i> Editar
+                                                    </button>
+                                                    
+                                                    <!-- Botão de deletar com alerta de confirmação -->
+                                                    <button type="button" class="btn btn-sm btn-outline-danger ml-2" onclick="confirmarDelecao('<%= doc.id_doc %>')">
+                                                        <i class="fas fa-trash-alt"></i> Deletar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    <% }) %>
+                                <% } else { %>
+                                    <li class="list-group-item">Nenhum documento encontrado.</li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-3">
+                <form action="/logout" method="POST">
+                    <button type="submit" class="btn btn-danger">Sair</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script>
+function confirmarDelecao(idDocumento, userId) {
+    if (confirm(`Tem certeza que deseja deletar o documento ${idDocumento}?`)) {
+        fetch(`/deletar_documento/${idDocumento}?userId=${userId}`, { method: 'DELETE' })
+            .then(response => {
+                if (response.ok) {
+                    console.log(`Documento com ID ${idDocumento} deletado com sucesso`);
+                    // Recarregar a página após a deleção
+                    window.location.reload();
+                } else {
+                    console.error('Erro ao deletar documento:', response.status);
+                }
+            })
+            .catch(error => console.error('Erro ao deletar documento:', error));
+    } else {
+        console.log('Operação de deleção cancelada.');
+    }
+}
+
+
+
+    </script>
+</body>
+</html>
