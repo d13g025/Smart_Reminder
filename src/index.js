@@ -180,7 +180,49 @@ app.delete('/deletar_documento/:idDocumento', (req, res) => {
     });
 });
 
+// Rota para renderizar a página de atualização de documento com os dados do documento
+app.get('/update_documento/:id_doc', (req, res) => {
+    const documentoId = req.params.id_doc; // Captura o ID do documento da rota
 
+    // Consulta ao banco de dados para obter os dados do documento
+    const sql = 'SELECT id_doc, descricaoDoc, data_vencimento, id_user FROM documento WHERE id_doc = ?';
+    connection.query(sql, [documentoId], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar dados do documento:', err);
+            res.status(500).send('Erro ao buscar dados do documento.');
+            return;
+        }
+
+        if (results.length > 0) {
+            const documento = results[0]; // Assume-se que o resultado é único (ou o primeiro, se houver vários)
+            const userId = documento.id_user; // Obtém o ID do usuário do documento
+
+            // Renderize a página update_documento e passe os dados do documento e o ID do usuário
+            res.render('update_documento', { documento, userId });
+        } else {
+            res.status(404).send('Documento não encontrado.');
+        }
+    });
+});
+
+app.post('/update_documento/:id_doc', (req, res) => {
+    const documentoId = req.params.id_doc; // Captura o ID do documento da rota
+    const { editDescricao, editDataVencimento } = req.body; // Captura os novos dados do documento do corpo da requisição
+    const userId = req.body.userId; // Captura o ID do usuário do corpo da requisição
+
+    // Atualiza os dados do documento no banco de dados
+    const sql = 'UPDATE documento SET descricaoDoc = ?, data_vencimento = ? WHERE id_doc = ?';
+    connection.query(sql, [editDescricao, editDataVencimento, documentoId], (err, result) => {
+        if (err) {
+            console.error('Erro ao atualizar documento:', err);
+            res.status(500).send('Erro ao atualizar documento.');
+            return;
+        }
+
+        console.log('Documento atualizado com sucesso:', result);
+        res.redirect(`/home/${userId}`); // Redireciona para a página home do usuário após a atualização
+    });
+});
 
 
 module.exports = app;

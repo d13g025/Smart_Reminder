@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css"> <!-- Link para o Bootstrap CSS -->
-    <script></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-4">
@@ -48,13 +47,13 @@
                                                     <strong>Data de Vencimento:</strong> <%= doc.data_vencimento %>
                                                 </div>
                                                 <div>
-                                                    <!-- Botão de editar -->
-                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="editarDocumento('<%= doc.id_doc %>')">
+                                                  <!-- Botão de editar -->
+                                                    <a href="/update_documento/<%= doc.id_doc %>" class="btn btn-sm btn-outline-primary">
                                                         <i class="fas fa-pencil-alt"></i> Editar
-                                                    </button>
+                                                    </a>                                                 
                                                     
                                                     <!-- Botão de deletar com alerta de confirmação -->
-                                                    <button type="button" class="btn btn-sm btn-outline-danger ml-2" onclick="confirmarDelecao('<%= doc.id_doc %>')">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger ml-2" onclick="confirmarDelecao('<%= doc.id_doc %>', '<%= userId %>')">
                                                         <i class="fas fa-trash-alt"></i> Deletar
                                                     </button>
                                                 </div>
@@ -78,28 +77,26 @@
         </div>
     </div>
 
-    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/jquery.min.js"></script> <!-- Inclua o jQuery -->
+    <script src="/js/bootstrap.bundle.min.js"></script> <!-- Inclua o Bootstrap JavaScript -->
     <script>
-function confirmarDelecao(idDocumento, userId) {
-    if (confirm(`Tem certeza que deseja deletar o documento ${idDocumento}?`)) {
-        fetch(`/deletar_documento/${idDocumento}?userId=${userId}`, { method: 'DELETE' })
-            .then(response => {
-                if (response.ok) {
-                    console.log(`Documento com ID ${idDocumento} deletado com sucesso`);
-                    // Recarregar a página após a deleção
-                    window.location.reload();
-                } else {
-                    console.error('Erro ao deletar documento:', response.status);
-                }
-            })
-            .catch(error => console.error('Erro ao deletar documento:', error));
-    } else {
-        console.log('Operação de deleção cancelada.');
-    }
-}
-
-
-
+        function confirmarDelecao(idDocumento, userId) {
+            if (confirm(`Tem certeza que deseja deletar o documento ${idDocumento}?`)) {
+                fetch(`/deletar_documento/${idDocumento}?userId=${userId}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log(`Documento com ID ${idDocumento} deletado com sucesso`);
+                            // Recarregar a página após a deleção
+                            window.location.reload();
+                        } else {
+                            console.error('Erro ao deletar documento:', response.status);
+                        }
+                    })
+                    .catch(error => console.error('Erro ao deletar documento:', error));
+            } else {
+                console.log('Operação de deleção cancelada.');
+            }
+        }
     </script>
 </body>
 </html>
